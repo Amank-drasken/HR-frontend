@@ -8,7 +8,7 @@ const api: AxiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 10000,
+  timeout: 60000,
 });
 
 // Request interceptor to attach JWT token + log request
@@ -62,6 +62,8 @@ export const authAPI = {
     api.post('/auth/register', data),
   createEmployee: (data: any) =>
     api.post('/auth/register', data),
+  autoLogin: (token: string) =>
+    api.post('/auth/auto-login', { token }),
 };
 
 // Employee APIs

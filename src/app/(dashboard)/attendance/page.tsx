@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -12,11 +11,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { attendanceAPIWithFallback } from '@/lib/apiWithFallback';
-import { Plus, Clock, TrendingUp, Calendar } from 'lucide-react';
-import AttendanceForm from '@/components/forms/AttendanceForm';
-import CheckInOut from '@/components/attendance/CheckInOut';
+import { Clock, TrendingUp, Calendar } from 'lucide-react';
 import { DepartmentAttendanceChart, AttendanceTrendChart } from '@/components/charts/AttendanceStats';
 import { format } from 'date-fns';
 
@@ -32,7 +28,7 @@ export default function AttendancePage() {
   const router = useRouter();
   const [attendance, setAttendance] = useState<Attendance[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [tick, setTick] = useState(0);
 
   const fetchAttendance = async () => {
     try {
@@ -64,12 +60,16 @@ export default function AttendancePage() {
     }
 
     fetchAttendance();
+    
+    // Refresh attendance data every 10 seconds for live updates
+    const interval = setInterval(fetchAttendance, 10000);
+    return () => clearInterval(interval);
   }, [router]);
 
-  const handleSuccess = () => {
-    setIsFormOpen(false);
-    fetchAttendance();
-  };
+  useEffect(() => {
+    const interval = setInterval(() => setTick((prev) => prev + 1), 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const SkeletonLoader = () => (
     <>
@@ -121,42 +121,54 @@ export default function AttendancePage() {
 
   const calculateAvgHours = () => {
     if (attendance.length === 0) return '0h 0m';
-    
-    let totalHours = 0;
+
+    let totalMinutes = 0;
     let recordsWithHours = 0;
-    
-    attendance.forEach(record => {
+
+    attendance.forEach((record) => {
       if (record.checkIn && record.checkOut) {
-        try {
-          const [inHour, inMin] = record.checkIn.split(':').map(Number);
-          const [outHour, outMin] = record.checkOut.split(':').map(Number);
-          
-          const inMinutes = inHour * 60 + inMin;
-          const outMinutes = outHour * 60 + outMin;
-          const hours = (outMinutes - inMinutes) / 60;
-          
-          totalHours += Math.max(0, hours);
-          recordsWithHours++;
-        } catch (e) {
-          // Skip invalid time formats
+        const checkInDate = toDateFromTimeString(record.checkIn, record.date);
+        const checkOutDate = toDateFromTimeString(record.checkOut, record.date);
+
+        if (!checkInDate || !checkOutDate) return;
+
+        let diffMs = checkOutDate.getTime() - checkInDate.getTime();
+        if (diffMs < 0) {
+          diffMs += 24 * 60 * 60 * 1000;
         }
+
+        totalMinutes += Math.floor(diffMs / 60000);
+        recordsWithHours++;
       }
     });
-    
-    const avgHours = recordsWithHours > 0 ? Math.floor(totalHours / recordsWithHours) : 0;
-    const avgMinutes = recordsWithHours > 0 ? Math.round((totalHours / recordsWithHours - avgHours) * 60) : 0;
-    
+
+    if (recordsWithHours === 0) return '0h 0m';
+
+    const avgTotalMinutes = Math.floor(totalMinutes / recordsWithHours);
+    const avgHours = Math.floor(avgTotalMinutes / 60);
+    const avgMinutes = avgTotalMinutes % 60;
+
     return `${avgHours}h ${avgMinutes}m`;
   };
 
   const stats = getTodayStats();
+  const latestAttendance = attendance
+    .slice()
+    .sort((a, b) => {
+      const aTime = a.checkIn ? toDateFromTimeString(a.checkIn, a.date)?.getTime() || 0 : 0;
+      const bTime = b.checkIn ? toDateFromTimeString(b.checkIn, b.date)?.getTime() || 0 : 0;
+      return bTime - aTime;
+    })
+    .filter((record, index, list) =>
+      index === list.findIndex((item) => String(item.employeeId) === String(record.employeeId))
+    );
 
   return (
     <div className='min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8'>
       {/* Header Section */}
       <div className='flex items-center justify-between mb-8'>
         <div>
-          <div className='flex items-center gap-3 mb-2'>
+          <div className='flex items-center gap-3'>
             <Clock className='text-emerald-400' size={32} />
             <h1 className='text-4xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent'>
               Attendance Tracker
@@ -164,13 +176,6 @@ export default function AttendancePage() {
           </div>
           <p className='text-slate-400'>Real-time employee attendance and analytics</p>
         </div>
-        <Button
-          onClick={() => setIsFormOpen(!isFormOpen)}
-          className='bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-700 hover:to-cyan-700 gap-2 text-white border-0 shadow-lg hover:shadow-xl transition-all'
-        >
-          <Plus className='w-4 h-4' />
-          Record Attendance
-        </Button>
       </div>
 
 
@@ -202,32 +207,20 @@ export default function AttendancePage() {
         </div>
       </div>
 
-      {/* Quick Check In/Out - Full Width */}
-      <div className='mb-8'>
-        <CheckInOut onCheckInSuccess={handleSuccess} onCheckOutSuccess={handleSuccess} />
-      </div>
-
-      {/* Charts - Full Width Below */}
+      {/* Charts - Full Width */}
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8'>
         <AttendanceTrendChart />
         <DepartmentAttendanceChart />
       </div>
 
-      {/* Tabs Section */}
+      {/* Tabs Section - Records Only */}
       <div className='bg-slate-800/40 rounded-xl border border-slate-700/50 backdrop-blur-xl overflow-hidden shadow-2xl'>
-        <Tabs defaultValue='records' className='w-full'>
-          <TabsList className='w-full bg-slate-900/50 border-b border-slate-700/30 rounded-none p-0'>
-            <TabsTrigger value='records' className='rounded-none border-b-2 border-transparent data-[state=active]:border-emerald-500 data-[state=active]:bg-slate-800/50'>
-              <Calendar className='w-4 h-4 mr-2' />
-              Attendance Records
-            </TabsTrigger>
-            <TabsTrigger value='form' className='rounded-none border-b-2 border-transparent data-[state=active]:border-emerald-500 data-[state=active]:bg-slate-800/50'>
-              <Plus className='w-4 h-4 mr-2' />
-              Add Attendance
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value='records' className='p-0'>
+        <div className='p-6 border-b border-slate-700/50'>
+          <div className='flex items-center gap-2'>
+            <Calendar className='w-5 h-5 text-blue-400' />
+            <h3 className='text-lg font-semibold text-slate-100'>Attendance Records</h3>
+          </div>
+        </div>
             <div className='overflow-x-auto'>
               <Table>
                 <TableHeader>
@@ -244,11 +237,14 @@ export default function AttendancePage() {
                 <TableBody>
                   {isLoading ? (
                     <SkeletonLoader />
-                  ) : attendance.length > 0 ? (
-                    attendance.map((record) => {
+                  ) : latestAttendance.length > 0 ? (
+                    latestAttendance.map((record) => {
+                      void tick;
                       const duration =
                         record.checkOut && record.checkIn
-                          ? calculateDuration(record.checkIn, record.checkOut)
+                          ? calculateDuration(record.checkIn, record.checkOut, record.date)
+                          : record.checkIn
+                          ? calculateLiveDuration(record.checkIn, record.date)
                           : '-';
                       
                       const isOnTime = record.checkIn && parseInt(record.checkIn) <= 9;
@@ -265,10 +261,10 @@ export default function AttendancePage() {
                             {format(new Date(record.date), 'MMM dd, yyyy')}
                           </TableCell>
                           <TableCell className='text-slate-300 py-3 text-sm font-mono'>
-                            {record.checkIn || '-'}
+                            {formatTime(record.checkIn, record.date)}
                           </TableCell>
                           <TableCell className='text-slate-300 py-3 text-sm font-mono'>
-                            {record.checkOut || '-'}
+                            {formatTime(record.checkOut || '', record.date)}
                           </TableCell>
                           <TableCell className='py-3'>
                             <span className='inline-flex items-center rounded-full bg-cyan-500/20 text-cyan-300 px-3 py-1 text-xs font-medium border border-cyan-500/30'>
@@ -310,32 +306,104 @@ export default function AttendancePage() {
                 Live tracking enabled
               </div>
             </div>
-          </TabsContent>
-
-          <TabsContent value='form' className='p-6'>
-            <AttendanceForm onSuccess={handleSuccess} />
-          </TabsContent>
-        </Tabs>
       </div>
     </div>
   );
 }
 
-function calculateDuration(checkIn: string, checkOut: string): string {
-  try {
-    const [inH, inM] = checkIn.split(':').map(Number);
-    const [outH, outM] = checkOut.split(':').map(Number);
+function parseDateParts(dateString?: string): { year: number; month: number; day: number } | null {
+  if (!dateString) return null;
 
-    let hours = outH - inH;
-    let minutes = outM - inM;
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(dateString);
+  if (!match) return null;
 
-    if (minutes < 0) {
-      hours--;
-      minutes += 60;
-    }
+  return {
+    year: parseInt(match[1], 10),
+    month: parseInt(match[2], 10),
+    day: parseInt(match[3], 10),
+  };
+}
 
-    return `${hours}h ${minutes}m`;
-  } catch {
-    return '-';
+function toDateFromTimeString(timeString: string, dateString?: string): Date | null {
+  if (!timeString) return null;
+
+  // If string looks like a full ISO datetime, parse directly (keeps timezone info)
+  if (/T/.test(timeString) || /Z$/.test(timeString) || /^\d{4}-\d{2}-\d{2}/.test(timeString)) {
+    const parsed = new Date(timeString);
+    return isNaN(parsed.getTime()) ? null : parsed;
   }
+
+  const amPmMatch = timeString.match(/\b(AM|PM)\b/i);
+  const cleaned = timeString.replace(/\s*(AM|PM)\s*/gi, '').trim();
+  const parts = cleaned.split(':');
+  if (parts.length < 2) return null;
+
+  let hours = parseInt(parts[0], 10);
+  const minutes = parseInt(parts[1], 10);
+
+  if (isNaN(hours) || isNaN(minutes)) return null;
+  if (minutes < 0 || minutes > 59) return null;
+
+  if (amPmMatch) {
+    const isPm = amPmMatch[1].toLowerCase() === 'pm';
+    if (hours === 12) {
+      hours = isPm ? 12 : 0;
+    } else if (isPm) {
+      hours += 12;
+    }
+  }
+
+  if (hours < 0 || hours > 23) return null;
+
+  const dateParts = parseDateParts(dateString);
+  if (dateParts) {
+    return new Date(dateParts.year, dateParts.month - 1, dateParts.day, hours, minutes, 0, 0);
+  }
+
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes, 0, 0);
+}
+
+function calculateDuration(checkIn: string, checkOut: string, dateString?: string): string {
+  const inDate = toDateFromTimeString(checkIn, dateString);
+  const outDate = toDateFromTimeString(checkOut, dateString);
+
+  if (!inDate || !outDate) return '-';
+
+  let diffMs = outDate.getTime() - inDate.getTime();
+  if (diffMs < 0) {
+    diffMs += 24 * 60 * 60 * 1000;
+  }
+
+  const totalMinutes = Math.floor(diffMs / 60000);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  return `${hours}h ${minutes}m`;
+}
+
+function calculateLiveDuration(checkIn: string, dateString?: string): string {
+  const inDate = toDateFromTimeString(checkIn, dateString);
+  if (!inDate) return '-';
+
+  const now = new Date();
+  let diffMs = now.getTime() - inDate.getTime();
+  if (diffMs < 0) {
+    diffMs += 24 * 60 * 60 * 1000;
+  }
+
+  const totalMinutes = Math.floor(diffMs / 60000);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  return `${hours}h ${minutes}m`;
+}
+
+function formatTime(timeString: string, dateString?: string): string {
+  if (!timeString || timeString === '-') return '-';
+
+  const date = toDateFromTimeString(timeString, dateString);
+  if (!date) return '-';
+
+  return format(date, 'hh:mm a');
 }

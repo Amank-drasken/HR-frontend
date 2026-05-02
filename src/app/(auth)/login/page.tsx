@@ -7,10 +7,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card } from '@/components/ui/card';
 import { AlertCircle, Loader, Lock, Mail, ChevronRight } from 'lucide-react';
 import { loginUser } from '@/lib/auth';
 import { useAuthStore } from '@/lib/store';
+import { autoCheckIn } from '@/lib/attendanceAuto';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -34,6 +34,8 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
   });
 
+
+
   const onSubmit = async (data: LoginFormData) => {
     try {
       setError(null);
@@ -41,6 +43,12 @@ export default function LoginPage() {
 
       const response = await loginUser(data.email, data.password);
       setToken(response.access_token);
+
+      // Auto check-in after successful login
+      const userId = localStorage.getItem('user_id');
+      if (userId) {
+        await autoCheckIn(userId);
+      }
 
       // Small delay to ensure state is updated
       setTimeout(() => {

@@ -45,6 +45,9 @@ const sidebarItems: SidebarItem[] = [
     href: '/attendance',
     icon: Clock,
     requiredRoles: ['ADMIN', 'HR', 'EMPLOYEE'],
+    subItems: [
+      { label: 'Alerts', href: '/alerts', requiredRoles: ['ADMIN', 'HR'] },
+    ],
   },
   {
     label: 'Settings',

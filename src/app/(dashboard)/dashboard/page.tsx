@@ -11,11 +11,28 @@ import type { UserRole } from '@/lib/roleGuard';
 
 export default function DashboardPage() {
   const [userRole, setUserRole] = useState<UserRole | null>(null);
+  const [alerts, setAlerts] = useState<CompanyAlert[]>([]);
 
   useEffect(() => {
     const role = getUserRole();
     setUserRole(role);
   }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const stored = localStorage.getItem('company_alerts');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored) as CompanyAlert[];
+        if (Array.isArray(parsed)) {
+          setAlerts(parsed);
+        }
+      } catch {
+        // Ignore invalid stored data
+      }
+    }
+  }, []);
+
 
   const canManageEmployees = userRole === 'ADMIN' || userRole === 'HR';
 
@@ -42,7 +59,7 @@ export default function DashboardPage() {
       {/* Charts Grid */}
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8'>
         <EmployeeGrowthChart />
-        <DepartmentDistribution />
+        {canManageEmployees ? <DepartmentDistribution /> : <EmployeeAlerts alerts={alerts} />}
       </div>
 
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8'>
@@ -85,6 +102,39 @@ export default function DashboardPage() {
             <p className='text-sm text-slate-400'>Track daily attendance</p>
           </div>
         </Link>
+      </div>
+    </div>
+  );
+}
+
+type CompanyAlert = {
+  id: string;
+  title: string;
+  message: string;
+  time: string;
+};
+
+function EmployeeAlerts({ alerts }: { alerts: CompanyAlert[] }) {
+  const hasAlerts = alerts.length > 0;
+
+  return (
+    <div className='bg-slate-800/40 rounded-xl border border-slate-700/50 backdrop-blur-xl p-6 shadow-2xl'>
+      <h3 className='text-lg font-semibold text-slate-100 mb-4'>Alerts</h3>
+      <div className='space-y-4'>
+        {!hasAlerts && (
+          <div className='rounded-lg border border-slate-700/40 bg-slate-900/30 p-4 text-sm text-slate-400'>
+            No alerts yet.
+          </div>
+        )}
+        {alerts.map((alert) => (
+          <div key={alert.id} className='rounded-lg border border-slate-700/40 bg-slate-900/30 p-4'>
+            <div className='flex items-center justify-between'>
+              <p className='text-sm font-semibold text-slate-100'>{alert.title}</p>
+              <span className='text-xs text-slate-500'>{alert.time}</span>
+            </div>
+            <p className='mt-2 text-sm text-slate-400'>{alert.message}</p>
+          </div>
+        ))}
       </div>
     </div>
   );
