@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, PersistStorage } from 'zustand/middleware';
 
 interface AuthStore {
   token: string | null;
@@ -10,7 +10,9 @@ interface AuthStore {
   initializeAuth: () => void;
 }
 
-export const useAuthStore = create<AuthStore>(
+type AuthStoreWithPersist = AuthStore;
+
+export const useAuthStore = create<AuthStoreWithPersist>()(
   persist(
     (set) => ({
       token: null,
