@@ -33,7 +33,18 @@ export default function AttendancePage() {
   const fetchAttendance = async () => {
     try {
       const response = await attendanceAPIWithFallback.getAll();
-      const allRecords = response.data || [];
+      // Handle multiple response formats
+      let allRecords: Attendance[] = [];
+      
+      if (Array.isArray(response.data)) {
+        allRecords = response.data;
+      } else if (Array.isArray(response.data?.data)) {
+        allRecords = response.data.data;
+      } else if (response.data && typeof response.data === 'object') {
+        // If it's an object with data property that's an array
+        const data = Object.values(response.data).find(v => Array.isArray(v));
+        allRecords = Array.isArray(data) ? data : [];
+      }
       
       // Filter to show only current user's attendance (unless ADMIN/HR)
       const userRole = localStorage.getItem('user_role');
@@ -47,6 +58,7 @@ export default function AttendancePage() {
     } catch (error: any) {
       console.error('Failed to fetch attendance:', error?.message);
       // Don't throw error - let page continue with empty state or fallback data
+      setAttendance([]);
     } finally {
       setIsLoading(false);
     }
@@ -74,24 +86,24 @@ export default function AttendancePage() {
   const SkeletonLoader = () => (
     <>
       {[...Array(8)].map((_, i) => (
-        <TableRow key={i} className='border-slate-700/20'>
+        <TableRow key={i} className='border-border'>
           <TableCell>
-            <Skeleton className='h-4 w-12 bg-slate-700' />
+            <Skeleton className='h-4 w-12 bg-card' />
           </TableCell>
           <TableCell>
-            <Skeleton className='h-4 w-24 bg-slate-700' />
+            <Skeleton className='h-4 w-24 bg-card' />
           </TableCell>
           <TableCell>
-            <Skeleton className='h-4 w-24 bg-slate-700' />
+            <Skeleton className='h-4 w-24 bg-card' />
           </TableCell>
           <TableCell>
-            <Skeleton className='h-4 w-20 bg-slate-700' />
+            <Skeleton className='h-4 w-20 bg-card' />
           </TableCell>
           <TableCell>
-            <Skeleton className='h-4 w-20 bg-slate-700' />
+            <Skeleton className='h-4 w-20 bg-card' />
           </TableCell>
           <TableCell>
-            <Skeleton className='h-4 w-20 bg-slate-700' />
+            <Skeleton className='h-4 w-20 bg-card' />
           </TableCell>
         </TableRow>
       ))}
@@ -164,7 +176,7 @@ export default function AttendancePage() {
     );
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8'>
+    <div className='min-h-screen bg-background p-8'>
       {/* Header Section */}
       <div className='flex items-center justify-between mb-8'>
         <div>
@@ -174,7 +186,7 @@ export default function AttendancePage() {
               Attendance Tracker
             </h1>
           </div>
-          <p className='text-slate-400'>Real-time employee attendance and analytics</p>
+          <p className='text-muted-foreground'>Real-time employee attendance and analytics</p>
         </div>
       </div>
 
@@ -183,27 +195,27 @@ export default function AttendancePage() {
       {/* KPI Cards */}
       <div className='grid grid-cols-4 gap-4 mb-8'>
         <div className='bg-gradient-to-br from-emerald-900/30 to-emerald-800/30 p-6 rounded-xl border border-emerald-700/50 backdrop-blur-xl'>
-          <p className='text-slate-400 text-sm mb-2'>Today Checked In</p>
+          <p className='text-muted-foreground text-sm mb-2'>Today Checked In</p>
           <p className='text-3xl font-bold text-emerald-400'>{stats.checkedIn}</p>
-          <p className='text-xs text-slate-500 mt-2'>Current session</p>
+          <p className='text-xs text-muted-foreground mt-2'>Current session</p>
         </div>
         
         <div className='bg-gradient-to-br from-blue-900/30 to-blue-800/30 p-6 rounded-xl border border-blue-700/50 backdrop-blur-xl'>
-          <p className='text-slate-400 text-sm mb-2'>Total Records Today</p>
+          <p className='text-muted-foreground text-sm mb-2'>Total Records Today</p>
           <p className='text-3xl font-bold text-blue-400'>{stats.total}</p>
-          <p className='text-xs text-slate-500 mt-2'>Updated now</p>
+          <p className='text-xs text-muted-foreground mt-2'>Updated now</p>
         </div>
 
         <div className='bg-gradient-to-br from-purple-900/30 to-purple-800/30 p-6 rounded-xl border border-purple-700/50 backdrop-blur-xl'>
-          <p className='text-slate-400 text-sm mb-2'>Checked Out</p>
+          <p className='text-muted-foreground text-sm mb-2'>Checked Out</p>
           <p className='text-3xl font-bold text-purple-400'>{stats.checkedOut}</p>
-          <p className='text-xs text-slate-500 mt-2'>End of shift</p>
+          <p className='text-xs text-muted-foreground mt-2'>End of shift</p>
         </div>
 
         <div className='bg-gradient-to-br from-amber-900/30 to-amber-800/30 p-6 rounded-xl border border-amber-700/50 backdrop-blur-xl'>
-          <p className='text-slate-400 text-sm mb-2'>Avg. Hours</p>
+          <p className='text-muted-foreground text-sm mb-2'>Avg. Hours</p>
           <p className='text-3xl font-bold text-amber-400'>{calculateAvgHours()}</p>
-          <p className='text-xs text-slate-500 mt-2'>Per employee</p>
+          <p className='text-xs text-muted-foreground mt-2'>Per employee</p>
         </div>
       </div>
 
@@ -214,24 +226,24 @@ export default function AttendancePage() {
       </div>
 
       {/* Tabs Section - Records Only */}
-      <div className='bg-slate-800/40 rounded-xl border border-slate-700/50 backdrop-blur-xl overflow-hidden shadow-2xl'>
-        <div className='p-6 border-b border-slate-700/50'>
+      <div className='bg-card rounded-xl border border-border backdrop-blur-xl overflow-hidden shadow-2xl'>
+        <div className='p-6 border-b border-border'>
           <div className='flex items-center gap-2'>
             <Calendar className='w-5 h-5 text-blue-400' />
-            <h3 className='text-lg font-semibold text-slate-100'>Attendance Records</h3>
+            <h3 className='text-lg font-semibold text-muted-foreground'>Attendance Records</h3>
           </div>
         </div>
             <div className='overflow-x-auto'>
               <Table>
                 <TableHeader>
-                  <TableRow className='border-slate-700/30 hover:bg-transparent'>
-                    <TableHead className='font-semibold text-slate-300 bg-slate-900/30'>ID</TableHead>
-                    <TableHead className='font-semibold text-slate-300 bg-slate-900/30'>Employee</TableHead>
-                    <TableHead className='font-semibold text-slate-300 bg-slate-900/30'>Date</TableHead>
-                    <TableHead className='font-semibold text-slate-300 bg-slate-900/30'>Check In</TableHead>
-                    <TableHead className='font-semibold text-slate-300 bg-slate-900/30'>Check Out</TableHead>
-                    <TableHead className='font-semibold text-slate-300 bg-slate-900/30'>Duration</TableHead>
-                    <TableHead className='font-semibold text-slate-300 bg-slate-900/30'>Status</TableHead>
+                  <TableRow className='border-border hover:bg-transparent'>
+                    <TableHead className='font-semibold text-muted-foreground bg-card'>ID</TableHead>
+                    <TableHead className='font-semibold text-muted-foreground bg-card'>Employee</TableHead>
+                    <TableHead className='font-semibold text-muted-foreground bg-card'>Date</TableHead>
+                    <TableHead className='font-semibold text-muted-foreground bg-card'>Check In</TableHead>
+                    <TableHead className='font-semibold text-muted-foreground bg-card'>Check Out</TableHead>
+                    <TableHead className='font-semibold text-muted-foreground bg-card'>Duration</TableHead>
+                    <TableHead className='font-semibold text-muted-foreground bg-card'>Status</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -250,20 +262,20 @@ export default function AttendancePage() {
                       const isOnTime = record.checkIn && parseInt(record.checkIn) <= 9;
 
                       return (
-                        <TableRow key={record.id} className='border-slate-700/20 hover:bg-slate-700/20 transition-colors'>
-                          <TableCell className='font-mono text-xs text-slate-400 py-3'>
+                        <TableRow key={record.id} className='border-border hover:bg-card transition-colors'>
+                          <TableCell className='font-mono text-xs text-muted-foreground py-3'>
                             {String(record.id).slice(0, 8)}
                           </TableCell>
-                          <TableCell className='font-semibold text-slate-100 py-3'>
+                          <TableCell className='font-semibold text-muted-foreground py-3'>
                             {record.employeeId}
                           </TableCell>
-                          <TableCell className='text-slate-300 py-3 text-sm'>
+                          <TableCell className='text-muted-foreground py-3 text-sm'>
                             {format(new Date(record.date), 'MMM dd, yyyy')}
                           </TableCell>
-                          <TableCell className='text-slate-300 py-3 text-sm font-mono'>
+                          <TableCell className='text-muted-foreground py-3 text-sm font-mono'>
                             {formatTime(record.checkIn, record.date)}
                           </TableCell>
-                          <TableCell className='text-slate-300 py-3 text-sm font-mono'>
+                          <TableCell className='text-muted-foreground py-3 text-sm font-mono'>
                             {formatTime(record.checkOut || '', record.date)}
                           </TableCell>
                           <TableCell className='py-3'>
@@ -284,11 +296,11 @@ export default function AttendancePage() {
                       );
                     })
                   ) : (
-                    <TableRow className='border-slate-700/20'>
+                    <TableRow className='border-border'>
                       <TableCell colSpan={7} className='text-center py-12'>
                         <div className='flex flex-col items-center gap-2'>
-                          <Clock className='text-slate-500' size={32} />
-                          <p className='text-slate-400'>No attendance records found</p>
+                          <Clock className='text-muted-foreground' size={32} />
+                          <p className='text-muted-foreground'>No attendance records found</p>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -297,11 +309,11 @@ export default function AttendancePage() {
               </Table>
             </div>
 
-            <div className='border-t border-slate-700/30 px-6 py-4 bg-slate-900/20 flex items-center justify-between text-sm'>
-              <p className='text-slate-400'>
-                Total records: <span className='text-slate-200 font-semibold'>{attendance.length}</span>
+            <div className='border-t border-border px-6 py-4 bg-card flex items-center justify-between text-sm'>
+              <p className='text-muted-foreground'>
+                Total records: <span className='text-muted-foreground font-semibold'>{attendance.length}</span>
               </p>
-              <div className='flex items-center gap-2 text-slate-500'>
+              <div className='flex items-center gap-2 text-muted-foreground'>
                 <TrendingUp size={16} />
                 Live tracking enabled
               </div>

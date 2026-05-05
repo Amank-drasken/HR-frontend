@@ -62,7 +62,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden'>
+    <div className='min-h-screen bg-gradient-to-br from-background via-blue-900 to-background flex items-center justify-center p-4 relative overflow-hidden'>
       {/* Animated background elements */}
       <div className='absolute inset-0 overflow-hidden'>
         <div className='absolute top-0 right-0 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse'></div>
@@ -80,14 +80,14 @@ export default function LoginPage() {
         </div>
 
         {/* Card */}
-        <div className='bg-slate-800/80 backdrop-blur-xl rounded-2xl border border-slate-700/50 shadow-2xl overflow-hidden'>
+        <div className='bg-card backdrop-blur-xl rounded-2xl border border-border shadow-2xl overflow-hidden'>
           <div className='p-8 sm:p-10'>
             {/* Header */}
             <div className='text-center mb-8'>
               <h1 className='text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-2'>
                 HR Portal
               </h1>
-              <p className='text-slate-400 text-sm'>Secure access to your workspace</p>
+              <p className='text-muted-foreground text-sm'>Secure access to your workspace</p>
 
             </div>
 
@@ -103,7 +103,7 @@ export default function LoginPage() {
             <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
               {/* Email field */}
               <div className='group'>
-                <label className='block text-sm font-semibold text-slate-300 mb-2 flex items-center gap-2'>
+                <label className='block text-sm font-semibold text-muted-foreground mb-2 flex items-center gap-2'>
                   <Mail className='w-4 h-4 text-blue-400' />
                   Email Address
                 </label>
@@ -112,7 +112,7 @@ export default function LoginPage() {
                     type='email'
                     placeholder='admin@example.com'
                     {...register('email')}
-                    className='w-full bg-slate-700/50 border border-slate-600/50 text-white placeholder-slate-500 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500/50 focus:bg-slate-700 focus:ring-2 focus:ring-blue-500/20 transition-all'
+                    className='w-full bg-card border border-border text-foreground placeholder-muted-foreground rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:bg-card focus:ring-2 focus:ring-primary/20 transition-all'
                   />
                 </div>
                 {errors.email && (
@@ -125,7 +125,7 @@ export default function LoginPage() {
 
               {/* Password field */}
               <div className='group'>
-                <label className='block text-sm font-semibold text-slate-300 mb-2 flex items-center gap-2'>
+                <label className='block text-sm font-semibold text-muted-foreground mb-2 flex items-center gap-2'>
                   <Lock className='w-4 h-4 text-blue-400' />
                   Password
                 </label>
@@ -134,12 +134,12 @@ export default function LoginPage() {
                     type={showPassword ? 'text' : 'password'}
                     placeholder='••••••••••'
                     {...register('password')}
-                    className='w-full bg-slate-700/50 border border-slate-600/50 text-white placeholder-slate-500 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500/50 focus:bg-slate-700 focus:ring-2 focus:ring-blue-500/20 transition-all'
+                    className='w-full bg-card border border-border text-foreground placeholder-muted-foreground rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:bg-card focus:ring-2 focus:ring-primary/20 transition-all'
                   />
                   <button
                     type='button'
                     onClick={() => setShowPassword(!showPassword)}
-                    className='absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300 transition-colors text-lg'
+                    className='absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors text-lg'
                   >
                     {showPassword ? '👁️' : '👁️‍🗨️'}
                   </button>
@@ -173,9 +173,9 @@ export default function LoginPage() {
             </form>
 
             {/* Divider */}
-            <div className='mt-8 pt-8 border-t border-slate-700/50'>
+            <div className='mt-8 pt-8 border-t border-border'>
               {/* Footer info */}
-              <p className='text-center text-xs text-slate-500'>
+              <p className='text-center text-xs text-muted-foreground'>
                 By signing in, you agree to our Terms of Service
               </p>
             </div>
@@ -183,7 +183,7 @@ export default function LoginPage() {
         </div>
 
         {/* Bottom accent */}
-        <div className='mt-6 text-center text-xs text-slate-500'>
+        <div className='mt-6 text-center text-xs text-muted-foreground'>
           <p>Need help? Contact your administrator</p>
         </div>
       </div>

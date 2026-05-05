@@ -85,27 +85,27 @@ export default function EmployeesPage() {
   const SkeletonLoader = () => (
     <>
       {[...Array(5)].map((_, i) => (
-        <TableRow key={i} className='border-slate-700/20'>
+        <TableRow key={i} className='border-border'>
           <TableCell>
-            <Skeleton className='h-4 w-12 bg-slate-700' />
+            <Skeleton className='h-4 w-12 bg-card' />
           </TableCell>
           <TableCell>
-            <Skeleton className='h-4 w-24 bg-slate-700' />
+            <Skeleton className='h-4 w-24 bg-card' />
           </TableCell>
           <TableCell>
-            <Skeleton className='h-4 w-32 bg-slate-700' />
+            <Skeleton className='h-4 w-32 bg-card' />
           </TableCell>
           <TableCell>
-            <Skeleton className='h-4 w-20 bg-slate-700' />
+            <Skeleton className='h-4 w-20 bg-card' />
           </TableCell>
           <TableCell>
-            <Skeleton className='h-4 w-24 bg-slate-700' />
+            <Skeleton className='h-4 w-24 bg-card' />
           </TableCell>
           <TableCell>
-            <Skeleton className='h-4 w-24 bg-slate-700' />
+            <Skeleton className='h-4 w-24 bg-card' />
           </TableCell>
           <TableCell>
-            <Skeleton className='h-4 w-20 bg-slate-700' />
+            <Skeleton className='h-4 w-20 bg-card' />
           </TableCell>
         </TableRow>
       ))}
@@ -118,7 +118,7 @@ export default function EmployeesPage() {
       case 'active':
         return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
       case 'inactive':
-        return 'bg-slate-500/20 text-slate-300 border-slate-500/30';
+        return 'bg-card text-muted-foreground border-border';
       case 'on-leave':
         return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
       default:
@@ -127,7 +127,7 @@ export default function EmployeesPage() {
   };
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8'>
+    <div className='min-h-screen bg-background p-8'>
       {/* Header Section */}
       <div className='flex items-center justify-between mb-8'>
         <div>
@@ -137,7 +137,7 @@ export default function EmployeesPage() {
               Employee Directory
             </h1>
           </div>
-          <p className='text-slate-400'>Manage and organize employee records</p>
+          <p className='text-muted-foreground'>Manage and organize employee records</p>
         </div>
         <Link href='/employees/create'>
           <Button className='bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 gap-2 text-white border-0 shadow-lg hover:shadow-xl transition-all'>
@@ -151,36 +151,36 @@ export default function EmployeesPage() {
 
       {/* Stats Cards */}
       <div className='grid grid-cols-3 gap-4 mb-8'>
-        <div className='bg-slate-800/50 p-4 rounded-lg border border-slate-700/50 backdrop-blur-xl'>
-          <p className='text-slate-400 text-sm mb-1'>Total Employees</p>
+        <div className='bg-card p-4 rounded-lg border border-border backdrop-blur-xl'>
+          <p className='text-muted-foreground text-sm mb-1'>Total Employees</p>
           <p className='text-2xl font-bold text-blue-400'>{employees.length}</p>
         </div>
-        <div className='bg-slate-800/50 p-4 rounded-lg border border-slate-700/50 backdrop-blur-xl'>
-          <p className='text-slate-400 text-sm mb-1'>Active Today</p>
+        <div className='bg-card p-4 rounded-lg border border-border backdrop-blur-xl'>
+          <p className='text-muted-foreground text-sm mb-1'>Active Today</p>
           <p className='text-2xl font-bold text-emerald-400'>{employees.length}</p>
         </div>
-        <div className='bg-slate-800/50 p-4 rounded-lg border border-slate-700/50 backdrop-blur-xl'>
-          <p className='text-slate-400 text-sm mb-1'>Showing</p>
+        <div className='bg-card p-4 rounded-lg border border-border backdrop-blur-xl'>
+          <p className='text-muted-foreground text-sm mb-1'>Showing</p>
           <p className='text-2xl font-bold text-purple-400'>{filteredEmployees.length}</p>
         </div>
       </div>
 
       {/* Main Table Card */}
-      <div className='bg-slate-800/40 rounded-xl border border-slate-700/50 backdrop-blur-xl overflow-hidden transition-all duration-300 hover:border-slate-600/80 shadow-2xl'>
+      <div className='bg-card rounded-xl border border-border backdrop-blur-xl overflow-hidden transition-all duration-300 hover:border-border shadow-2xl'>
         
         {/* Search Bar */}
-        <div className='p-6 border-b border-slate-700/30'>
+        <div className='p-6 border-b border-border'>
           <div className='flex gap-3'>
             <div className='flex-1 relative'>
-              <Search className='absolute left-3 top-3 h-5 w-5 text-slate-500' />
+              <Search className='absolute left-3 top-3 h-5 w-5 text-muted-foreground' />
               <Input
                 placeholder='Search by name, email, or phone...'
-                className='pl-10 bg-slate-900/50 border-slate-700/50 text-slate-100 placeholder-slate-500 hover:border-slate-600 focus:border-blue-500 transition-colors'
+                className='pl-10 bg-card border-border text-muted-foreground placeholder-slate-500 hover:border-border focus:border-blue-500 transition-colors'
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <Button variant='outline' className='border-slate-700/50 text-slate-300 hover:bg-slate-700/50'>
+            <Button variant='outline' className='border-border text-muted-foreground hover:bg-card'>
               <Filter className='w-4 h-4' />
             </Button>
           </div>
@@ -190,15 +190,15 @@ export default function EmployeesPage() {
         <div className='overflow-x-auto'>
           <Table>
             <TableHeader>
-              <TableRow className='border-slate-700/30 hover:bg-transparent'>
-                <TableHead className='font-semibold text-slate-300 bg-slate-900/30'>ID</TableHead>
-                <TableHead className='font-semibold text-slate-300 bg-slate-900/30'>Name</TableHead>
-                <TableHead className='font-semibold text-slate-300 bg-slate-900/30'>Email</TableHead>
-                <TableHead className='font-semibold text-slate-300 bg-slate-900/30'>Phone</TableHead>
-                <TableHead className='font-semibold text-slate-300 bg-slate-900/30'>Department</TableHead>
-                <TableHead className='font-semibold text-slate-300 bg-slate-900/30'>Location</TableHead>
-                <TableHead className='font-semibold text-slate-300 bg-slate-900/30'>Joined</TableHead>
-                <TableHead className='font-semibold text-slate-300 bg-slate-900/30'>Status</TableHead>
+              <TableRow className='border-border hover:bg-transparent'>
+                <TableHead className='font-semibold text-muted-foreground bg-card'>ID</TableHead>
+                <TableHead className='font-semibold text-muted-foreground bg-card'>Name</TableHead>
+                <TableHead className='font-semibold text-muted-foreground bg-card'>Email</TableHead>
+                <TableHead className='font-semibold text-muted-foreground bg-card'>Phone</TableHead>
+                <TableHead className='font-semibold text-muted-foreground bg-card'>Department</TableHead>
+                <TableHead className='font-semibold text-muted-foreground bg-card'>Location</TableHead>
+                <TableHead className='font-semibold text-muted-foreground bg-card'>Joined</TableHead>
+                <TableHead className='font-semibold text-muted-foreground bg-card'>Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -206,16 +206,20 @@ export default function EmployeesPage() {
                 <SkeletonLoader />
               ) : filteredEmployees.length > 0 ? (
                 filteredEmployees.map((employee) => (
-                  <TableRow key={employee.id} className='border-slate-700/20 hover:bg-slate-700/20 transition-colors'>
-                    <TableCell className='font-mono text-xs text-slate-400 py-3'>{String(employee.id).slice(0, 8)}</TableCell>
-                    <TableCell className='font-semibold text-slate-100 py-3'>
+                  <TableRow 
+                    key={employee.id} 
+                    className='border-border hover:bg-muted/50 transition-colors cursor-pointer'
+                    onClick={() => router.push(`/employees/${employee.id}`)}
+                  >
+                    <TableCell className='font-mono text-xs text-muted-foreground py-3'>{String(employee.id).slice(0, 8)}</TableCell>
+                    <TableCell className='font-semibold text-primary hover:underline py-3'>
                       {employee.firstName} {employee.lastName}
                     </TableCell>
-                    <TableCell className='text-slate-300 py-3 text-sm'>{employee.email}</TableCell>
-                    <TableCell className='text-slate-300 py-3 text-sm'>{employee.phone}</TableCell>
-                    <TableCell className='text-slate-400 py-3 text-sm'>{employee.departmentId || '-'}</TableCell>
-                    <TableCell className='text-slate-400 py-3 text-sm'>{employee.locationId || '-'}</TableCell>
-                    <TableCell className='text-slate-400 py-3 text-sm'>
+                    <TableCell className='text-muted-foreground py-3 text-sm'>{employee.email}</TableCell>
+                    <TableCell className='text-muted-foreground py-3 text-sm'>{employee.phone}</TableCell>
+                    <TableCell className='text-muted-foreground py-3 text-sm'>{employee.departmentId || '-'}</TableCell>
+                    <TableCell className='text-muted-foreground py-3 text-sm'>{employee.locationId || '-'}</TableCell>
+                    <TableCell className='text-muted-foreground py-3 text-sm'>
                       {format(new Date(employee.createdAt), 'MMM dd')}
                     </TableCell>
                     <TableCell className='py-3'>
@@ -226,12 +230,12 @@ export default function EmployeesPage() {
                   </TableRow>
                 ))
               ) : (
-                <TableRow className='border-slate-700/20'>
+                <TableRow className='border-border'>
                   <TableCell colSpan={8} className='text-center py-12'>
                     <div className='flex flex-col items-center gap-2'>
-                      <Users className='text-slate-500' size={32} />
-                      <p className='text-slate-400'>No employees found</p>
-                      <p className='text-slate-500 text-sm'>Try adjusting your search filters</p>
+                      <Users className='text-muted-foreground' size={32} />
+                      <p className='text-muted-foreground'>No employees found</p>
+                      <p className='text-muted-foreground text-sm'>Try adjusting your search filters</p>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -241,11 +245,11 @@ export default function EmployeesPage() {
         </div>
 
         {/* Footer Stats */}
-        <div className='border-t border-slate-700/30 px-6 py-4 bg-slate-900/20 flex items-center justify-between'>
-          <p className='text-sm text-slate-400'>
-            Showing <span className='text-slate-200 font-semibold'>{filteredEmployees.length}</span> of <span className='text-slate-200 font-semibold'>{employees.length}</span> employees
+        <div className='border-t border-border px-6 py-4 bg-card flex items-center justify-between'>
+          <p className='text-sm text-muted-foreground'>
+            Showing <span className='text-muted-foreground font-semibold'>{filteredEmployees.length}</span> of <span className='text-muted-foreground font-semibold'>{employees.length}</span> employees
           </p>
-          <div className='flex items-center gap-2 text-xs text-slate-500'>
+          <div className='flex items-center gap-2 text-xs text-muted-foreground'>
             <TrendingUp size={16} />
             Real-time data
           </div>

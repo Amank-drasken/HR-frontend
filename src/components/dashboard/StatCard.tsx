@@ -30,7 +30,7 @@ export function StatCard({ title, value, subtitle, icon, trend, color, onClick, 
   return (
     <div 
       onClick={handleClick}
-      className="group relative bg-gradient-to-br from-slate-800/60 to-slate-900/40 p-6 rounded-xl border border-slate-700/50 backdrop-blur-xl hover:border-slate-600/80 transition-all duration-300 overflow-hidden cursor-pointer hover:scale-105 hover:shadow-xl"
+      className="group relative bg-gradient-to-br from-background/60 to-background/40 p-6 rounded-xl border border-border backdrop-blur-xl hover:border-border transition-all duration-300 overflow-hidden cursor-pointer hover:scale-105 hover:shadow-xl"
     >
       {/* Hover gradient effect */}
       <div className={`absolute inset-0 bg-gradient-to-br ${color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
@@ -50,9 +50,9 @@ export function StatCard({ title, value, subtitle, icon, trend, color, onClick, 
           )}
         </div>
 
-        <h3 className="text-sm font-medium text-slate-400 mb-2">{title}</h3>
-        <p className="text-3xl font-bold text-slate-100 mb-2">{value}</p>
-        <p className="text-xs text-slate-500">{subtitle}</p>
+        <h3 className="text-sm font-medium text-muted-foreground mb-2">{title}</h3>
+        <p className="text-3xl font-bold text-muted-foreground mb-2">{value}</p>
+        <p className="text-xs text-muted-foreground">{subtitle}</p>
       </div>
     </div>
   );

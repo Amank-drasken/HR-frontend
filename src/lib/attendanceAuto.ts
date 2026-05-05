@@ -24,6 +24,13 @@ export const autoCheckIn = async (employeeId: string): Promise<boolean> => {
   try {
     console.log('🟢 Auto check-in for employee:', employeeId);
     
+    // Skip API call if using mock auth
+    if (process.env.NEXT_PUBLIC_MOCK_AUTH === 'true') {
+      console.log('✅ Mock auth enabled - skipping auto check-in API call');
+      sessionStorage.setItem('currentAttendanceId', `mock-${Date.now()}`);
+      return true;
+    }
+    
     // Call check-in endpoint
     const response = await attendanceAPI.checkIn(employeeId);
     
@@ -57,6 +64,13 @@ export const autoCheckOut = async (): Promise<boolean> => {
     }
 
     console.log('🔴 Auto check-out for attendance:', attendanceId);
+    
+    // Skip API call if using mock auth
+    if (process.env.NEXT_PUBLIC_MOCK_AUTH === 'true') {
+      console.log('✅ Mock auth enabled - skipping auto check-out API call');
+      sessionStorage.removeItem('currentAttendanceId');
+      return true;
+    }
     
     // Call check-out endpoint
     const response = await attendanceAPI.checkOut(attendanceId);

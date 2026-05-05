@@ -59,15 +59,15 @@ export function AttendanceTrendChart() {
 
   if (loading || trendData.length === 0) {
     return (
-      <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700/50 backdrop-blur-xl flex items-center justify-center h-80">
-        <div className="text-slate-400">Loading chart...</div>
+      <div className="bg-card p-6 rounded-xl border border-border backdrop-blur-xl flex items-center justify-center h-80">
+        <div className="text-muted-foreground">Loading chart...</div>
       </div>
     );
   }
 
   return (
-    <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700/50 backdrop-blur-xl">
-      <h3 className="text-lg font-semibold text-slate-100 mb-4">Attendance Trend (Last 4 Weeks)</h3>
+    <div className="bg-card p-6 rounded-xl border border-border backdrop-blur-xl">
+      <h3 className="text-lg font-semibold text-muted-foreground mb-4">Attendance Trend (Last 4 Weeks)</h3>
       <ResponsiveContainer width="100%" height={300}>
         <AreaChart data={trendData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
           <defs>
@@ -147,15 +147,15 @@ export function DepartmentAttendanceChart() {
 
   if (loading || deptData.length === 0) {
     return (
-      <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700/50 backdrop-blur-xl flex items-center justify-center h-80">
-        <div className="text-slate-400">Loading chart...</div>
+      <div className="bg-card p-6 rounded-xl border border-border backdrop-blur-xl flex items-center justify-center h-80">
+        <div className="text-muted-foreground">Loading chart...</div>
       </div>
     );
   }
 
   return (
-    <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700/50 backdrop-blur-xl">
-      <h3 className="text-lg font-semibold text-slate-100 mb-4">Department Attendance Rate</h3>
+    <div className="bg-card p-6 rounded-xl border border-border backdrop-blur-xl">
+      <h3 className="text-lg font-semibold text-muted-foreground mb-4">Department Attendance Rate</h3>
       <ResponsiveContainer width="100%" height={280}>
         <BarChart data={deptData}>
           <CartesianGrid strokeDasharray="3 3" stroke="#475569" />

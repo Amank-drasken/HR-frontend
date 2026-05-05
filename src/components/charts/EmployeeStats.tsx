@@ -38,15 +38,15 @@ export function EmployeeGrowthChart() {
 
   if (loading || data.length === 0) {
     return (
-      <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700/50 backdrop-blur-xl flex items-center justify-center h-80">
-        <div className="text-slate-400">Loading chart...</div>
+      <div className="bg-card p-6 rounded-xl border border-border backdrop-blur-xl flex items-center justify-center h-80">
+        <div className="text-muted-foreground">Loading chart...</div>
       </div>
     );
   }
 
   return (
-    <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700/50 backdrop-blur-xl">
-      <h3 className="text-lg font-semibold text-slate-100 mb-4">Employee Growth Trend</h3>
+    <div className="bg-card p-6 rounded-xl border border-border backdrop-blur-xl">
+      <h3 className="text-lg font-semibold text-muted-foreground mb-4">Employee Growth Trend</h3>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
@@ -99,15 +99,15 @@ export function DepartmentDistribution() {
 
   if (loading || departmentData.length === 0) {
     return (
-      <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700/50 backdrop-blur-xl flex items-center justify-center h-80">
-        <div className="text-slate-400">Loading chart...</div>
+      <div className="bg-card p-6 rounded-xl border border-border backdrop-blur-xl flex items-center justify-center h-80">
+        <div className="text-muted-foreground">Loading chart...</div>
       </div>
     );
   }
 
   return (
-    <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700/50 backdrop-blur-xl">
-      <h3 className="text-lg font-semibold text-slate-100 mb-4">Department Distribution</h3>
+    <div className="bg-card p-6 rounded-xl border border-border backdrop-blur-xl">
+      <h3 className="text-lg font-semibold text-muted-foreground mb-4">Department Distribution</h3>
       <ResponsiveContainer width="100%" height={300}>
         <PieChart>
           <Pie
@@ -177,15 +177,15 @@ export function AttendanceChart() {
 
   if (loading || attendanceData.length === 0) {
     return (
-      <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700/50 backdrop-blur-xl flex items-center justify-center h-80">
-        <div className="text-slate-400">Loading chart...</div>
+      <div className="bg-card p-6 rounded-xl border border-border backdrop-blur-xl flex items-center justify-center h-80">
+        <div className="text-muted-foreground">Loading chart...</div>
       </div>
     );
   }
 
   return (
-    <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700/50 backdrop-blur-xl">
-      <h3 className="text-lg font-semibold text-slate-100 mb-4">Weekly Attendance</h3>
+    <div className="bg-card p-6 rounded-xl border border-border backdrop-blur-xl">
+      <h3 className="text-lg font-semibold text-muted-foreground mb-4">Weekly Attendance</h3>
       <ResponsiveContainer width="100%" height={250}>
         <BarChart data={attendanceData}>
           <CartesianGrid strokeDasharray="3 3" stroke="#475569" />

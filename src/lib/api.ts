@@ -1,7 +1,9 @@
 import axios, { AxiosInstance, AxiosError } from 'axios';
+import { demoEmployees, demoAttendance, demoDepartments } from './demoData';
 
 // Backend URL from environment - use as-is
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const isMockAuthMode = process.env.NEXT_PUBLIC_MOCK_AUTH === 'true';
 
 const api: AxiosInstance = axios.create({
   baseURL: API_URL,
@@ -13,9 +15,37 @@ const api: AxiosInstance = axios.create({
 
 // Request interceptor to attach JWT token + log request
 api.interceptors.request.use((config) => {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+  let token: string | null = null;
+  
+  if (typeof window !== 'undefined') {
+    // Try to get token from access_token key first
+    token = localStorage.getItem('access_token');
+    
+    // If not found, try to get from auth-store JSON
+    if (!token) {
+      try {
+        const authStore = localStorage.getItem('auth-store');
+        if (authStore) {
+          const parsed = JSON.parse(authStore);
+          token = parsed.state?.token || parsed.token || null;
+          if (token) {
+            console.warn('✅ Token found in auth-store JSON:', token.substring(0, 20));
+            // Also save to access_token for future requests
+            localStorage.setItem('access_token', token);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to parse auth-store:', e);
+      }
+    }
+  }
+  
+  console.log('📤 API Request to:', config.url, 'Token found:', !!token, 'Token value:', token?.substring(0, 20));
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+    console.log('✅ Authorization header set');
+  } else {
+    console.warn('⚠️ No token found for request:', config.url);
   }
   return config;
 });
@@ -30,8 +60,50 @@ api.interceptors.response.use(
     const status = error.response?.status;
     const errorMessage = error.message || 'Unknown error';
     const responseData = error.response?.data;
-    
-    // Better error logging
+    const isMockAuthActive =
+      isMockAuthMode ||
+      (typeof window !== 'undefined' && localStorage.getItem('access_token') === 'mock-access-token');
+
+    // If 401 error and mock auth is enabled, return mock data (BEFORE LOGGING)
+    if (status === 401 && isMockAuthActive) {
+      // Return appropriate mock data based on the URL
+      if (url?.includes('/employees')) {
+        return Promise.resolve({
+          data: demoEmployees, // Return array directly
+          status: 200,
+          statusText: 'OK (MOCK)',
+          headers: {},
+          config: error.config!,
+        } as any);
+      } else if (url?.includes('/attendance')) {
+        return Promise.resolve({
+          data: demoAttendance, // Return array directly
+          status: 200,
+          statusText: 'OK (MOCK)',
+          headers: {},
+          config: error.config!,
+        } as any);
+      } else if (url?.includes('/departments')) {
+        return Promise.resolve({
+          data: demoDepartments, // Return array directly
+          status: 200,
+          statusText: 'OK (MOCK)',
+          headers: {},
+          config: error.config!,
+        } as any);
+      }
+
+      // Fallback for any other endpoint
+      return Promise.resolve({
+        data: [],
+        status: 200,
+        statusText: 'OK (MOCK)',
+        headers: {},
+        config: error.config!,
+      } as any);
+    }
+
+    // Better error logging (ONLY for non-mock 401s)
     if (!error.response) {
       // Network error, no response from server
       console.error(`❌ Network Error (${errorMessage}): ${url}`, {
@@ -39,12 +111,12 @@ api.interceptors.response.use(
         code: error.code,
         config: error.config,
       });
-    } else {
-      // Server responded with error status
+    } else if (status !== 401 || !isMockAuthActive) {
+      // Server responded with error status (skip 401 errors in mock mode)
       console.error(`❌ API Error: ${status} ${url}`, responseData);
     }
-    
-    if (error.response?.status === 401) {
+
+    if (error.response?.status === 401 && !isMockAuthActive) {
       if (typeof window !== 'undefined') {
         localStorage.removeItem('access_token');
         window.location.href = '/login';

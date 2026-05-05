@@ -17,7 +17,20 @@ export default function DashboardLayout({
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('access_token');
+    let token = localStorage.getItem('access_token');
+    
+    // If no token in localStorage, try to extract from cookie
+    if (!token) {
+      const cookieString = document.cookie;
+      const cookieValue = cookieString.split(';').find(cookie => cookie.trim().startsWith('access_token='));
+      if (cookieValue) {
+        token = cookieValue.split('=')[1];
+        console.warn('🍪 Found token in cookie, syncing to localStorage:', token?.substring(0, 20));
+        if (token) {
+          localStorage.setItem('access_token', token);
+        }
+      }
+    }
     
     if (!token) {
       setIsAuthenticated(false);

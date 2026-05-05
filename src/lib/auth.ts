@@ -7,19 +7,46 @@ export interface LoginResponse {
 }
 
 export const persistAuthSession = (token: string, userData: any, email: string) => {
-  // Store in localStorage
-  localStorage.setItem('access_token', token);
-
-  // Also set as cookie for middleware
-  if (typeof window !== 'undefined') {
-    document.cookie = `access_token=${token}; path=/; max-age=86400`;
+  console.warn('🔐 persistAuthSession called with token:', token);
+  
+  // Ensure window is defined for client-side only
+  if (typeof window === 'undefined') {
+    console.warn('⚠️ Window is undefined - persistAuthSession cannot run on server');
+    return;
+  }
+  
+  // Store in localStorage - ensure it's actually saved
+  try {
+    localStorage.setItem('access_token', token);
+    const verifyToken = localStorage.getItem('access_token');
+    console.warn('✅ Token stored in localStorage. Verified:', verifyToken === token ? 'YES' : 'NO');
+    
+    if (verifyToken !== token) {
+      console.error('❌ Token verification failed! Stored:', verifyToken, 'Expected:', token);
+    }
+  } catch (e) {
+    console.error('❌ Failed to store token in localStorage:', e);
   }
 
-  // Store user data if available
-  if (userData.id) localStorage.setItem('user_id', String(userData.id));
-  if (userData.firstName) localStorage.setItem('user_firstName', userData.firstName);
-  if (userData.lastName) localStorage.setItem('user_lastName', userData.lastName);
-  if (userData.email) localStorage.setItem('user_email', userData.email);
+  // Also set as cookie for middleware
+  try {
+    document.cookie = `access_token=${token}; path=/; max-age=86400; SameSite=Lax`;
+    console.log('✅ Token stored in cookie');
+  } catch (e) {
+    console.error('❌ Failed to store token in cookie:', e);
+  }
+
+  // Store complete user data as JSON for profile pages
+  try {
+    localStorage.setItem('user_data', JSON.stringify(userData));
+    localStorage.setItem('user_id', String(userData.id || ''));
+    localStorage.setItem('user_firstName', userData.firstName || '');
+    localStorage.setItem('user_lastName', userData.lastName || '');
+    localStorage.setItem('user_email', userData.email || email);
+    console.log('✅ User data stored in localStorage');
+  } catch (e) {
+    console.error('❌ Failed to store user data in localStorage:', e);
+  }
 
   // Extract role from multiple sources
   let userRole = userData.role;
@@ -27,9 +54,12 @@ export const persistAuthSession = (token: string, userData: any, email: string) 
   // Try JWT payload if userData doesn't have role
   if (!userRole && token) {
     try {
-      const decoded = JSON.parse(atob(token.split('.')[1]));
-      console.log('JWT Decoded:', decoded);
-      userRole = decoded.role || decoded.userRole || userData.role;
+      const parts = token.split('.');
+      if (parts.length >= 2) {
+        const decoded = JSON.parse(atob(parts[1]));
+        console.log('JWT Decoded:', decoded);
+        userRole = decoded.role || decoded.userRole || userData.role;
+      }
     } catch (e) {
       console.error('Failed to decode JWT', e);
     }
@@ -48,17 +78,25 @@ export const persistAuthSession = (token: string, userData: any, email: string) 
   }
 
   if (userRole) {
-    localStorage.setItem('user_role', userRole);
-    console.log('✅ Role set to:', userRole);
+    try {
+      localStorage.setItem('user_role', userRole);
+      console.log('✅ Role set to:', userRole);
+    } catch (e) {
+      console.error('❌ Failed to store user role:', e);
+    }
   }
 };
 
 export const loginUser = async (email: string, password: string): Promise<LoginResponse> => {
+  console.warn('🔑 loginUser called with email:', email);
+  console.warn('📝 process.env.NEXT_PUBLIC_MOCK_AUTH value:', process.env.NEXT_PUBLIC_MOCK_AUTH);
   const isMockAuthEnabled = process.env.NEXT_PUBLIC_MOCK_AUTH === 'true';
+  console.warn('💡 isMockAuthEnabled:', isMockAuthEnabled);
 
   if (isMockAuthEnabled) {
     // Dev-only fallback login to test frontend flows when backend is unavailable.
     const mockToken = 'mock-access-token';
+    console.warn('✨ Using mock auth with token:', mockToken);
     const mockUser = {
       id: 'mock-user-1',
       firstName: 'Mock',
@@ -67,6 +105,7 @@ export const loginUser = async (email: string, password: string): Promise<LoginR
       role: 'ADMIN',
     };
 
+    console.warn('🔄 Calling persistAuthSession with mockToken:', mockToken);
     persistAuthSession(mockToken, mockUser, email);
     return {
       message: 'Mock login successful',

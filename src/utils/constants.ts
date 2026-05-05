@@ -24,7 +24,7 @@ export const ROUTES = {
 } as const;
 
 // Application Info
-export const APP_NAME = 'HR Management System';
+export const APP_NAME = 'Drasken HRMS';
 export const APP_VERSION = '1.0';
 export const APP_EDITION = 'Industrial';
 

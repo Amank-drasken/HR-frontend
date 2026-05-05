@@ -64,54 +64,54 @@ export default function AlertsPage() {
   const canSendAlerts = userRole === 'ADMIN' || userRole === 'HR';
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8'>
+    <div className='min-h-screen bg-background p-8'>
       <div className='mb-8'>
         <h1 className='text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-2'>
           Company Alerts
         </h1>
-        <p className='text-slate-400'>Updates shared by HR and Admin</p>
+        <p className='text-muted-foreground'>Updates shared by HR and Admin</p>
       </div>
 
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-        <div className='bg-slate-800/40 rounded-xl border border-slate-700/50 backdrop-blur-xl p-6 shadow-2xl'>
-          <h3 className='text-lg font-semibold text-slate-100 mb-4'>Alerts</h3>
+        <div className='bg-card rounded-xl border border-border backdrop-blur-xl p-6 shadow-2xl'>
+          <h3 className='text-lg font-semibold text-muted-foreground mb-4'>Alerts</h3>
           <div className='space-y-4'>
             {alerts.length === 0 && (
-              <div className='rounded-lg border border-slate-700/40 bg-slate-900/30 p-4 text-sm text-slate-400'>
+              <div className='rounded-lg border border-border bg-card p-4 text-sm text-muted-foreground'>
                 No alerts yet.
               </div>
             )}
             {alerts.map((alert) => (
-              <div key={alert.id} className='rounded-lg border border-slate-700/40 bg-slate-900/30 p-4'>
+              <div key={alert.id} className='rounded-lg border border-border bg-card p-4'>
                 <div className='flex items-center justify-between'>
-                  <p className='text-sm font-semibold text-slate-100'>{alert.title}</p>
-                  <span className='text-xs text-slate-500'>{alert.time}</span>
+                  <p className='text-sm font-semibold text-muted-foreground'>{alert.title}</p>
+                  <span className='text-xs text-muted-foreground'>{alert.time}</span>
                 </div>
-                <p className='mt-2 text-sm text-slate-400'>{alert.message}</p>
+                <p className='mt-2 text-sm text-muted-foreground'>{alert.message}</p>
               </div>
             ))}
           </div>
         </div>
 
         {canSendAlerts && (
-          <div className='bg-slate-800/40 rounded-xl border border-slate-700/50 backdrop-blur-xl p-6 shadow-2xl'>
-            <h3 className='text-lg font-semibold text-slate-100 mb-4'>Send Alert</h3>
+          <div className='bg-card rounded-xl border border-border backdrop-blur-xl p-6 shadow-2xl'>
+            <h3 className='text-lg font-semibold text-muted-foreground mb-4'>Send Alert</h3>
             <form onSubmit={handleSubmit} className='space-y-4'>
               <div>
-                <label className='block text-xs uppercase tracking-wide text-slate-400 mb-2'>Title</label>
+                <label className='block text-xs uppercase tracking-wide text-muted-foreground mb-2'>Title</label>
                 <input
                   value={title}
                   onChange={(event) => setTitle(event.target.value)}
-                  className='w-full rounded-lg bg-slate-900/40 border border-slate-700/50 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500'
+                  className='w-full rounded-lg bg-card border border-border px-3 py-2 text-sm text-muted-foreground placeholder-slate-500 focus:outline-none focus:border-blue-500'
                   placeholder='Company update'
                 />
               </div>
               <div>
-                <label className='block text-xs uppercase tracking-wide text-slate-400 mb-2'>Message</label>
+                <label className='block text-xs uppercase tracking-wide text-muted-foreground mb-2'>Message</label>
                 <textarea
                   value={message}
                   onChange={(event) => setMessage(event.target.value)}
-                  className='min-h-[120px] w-full rounded-lg bg-slate-900/40 border border-slate-700/50 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500'
+                  className='min-h-[120px] w-full rounded-lg bg-card border border-border px-3 py-2 text-sm text-muted-foreground placeholder-slate-500 focus:outline-none focus:border-blue-500'
                   placeholder='Write alert message for all employees'
                 />
               </div>

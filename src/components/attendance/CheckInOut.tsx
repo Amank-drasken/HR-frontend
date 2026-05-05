@@ -116,17 +116,17 @@ export default function CheckInOut({ onCheckInSuccess, onCheckOutSuccess }: Chec
   };
 
   return (
-    <Card className='p-6 bg-gradient-to-br from-slate-800/50 to-slate-900/50 border-slate-700/50'>
+    <Card className='p-6 bg-gradient-to-br from-background/50 to-background/50 border-border'>
       <div className='space-y-4'>
         <div className='flex items-center justify-between mb-6'>
           <div>
-            <h3 className='text-lg font-semibold text-slate-100'>Quick Check In/Out</h3>
-            <p className='text-sm text-slate-400 mt-1'>Manage your attendance with one click</p>
+            <h3 className='text-lg font-semibold text-muted-foreground'>Quick Check In/Out</h3>
+            <p className='text-sm text-muted-foreground mt-1'>Manage your attendance with one click</p>
           </div>
           <div className={`px-3 py-1 rounded-full text-xs font-medium ${
             isCheckedIn 
               ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' 
-              : 'bg-slate-500/20 text-slate-300 border border-slate-500/30'
+              : 'bg-card text-muted-foreground border border-border'
           }`}>
             {isCheckedIn ? '✓ Checked In' : 'Not Checked In'}
           </div>
@@ -147,18 +147,18 @@ export default function CheckInOut({ onCheckInSuccess, onCheckOutSuccess }: Chec
         )}
 
         {todayRecord && (
-          <div className='p-4 bg-slate-900/50 border border-slate-700/50 rounded-lg space-y-2'>
+          <div className='p-4 bg-card border border-border rounded-lg space-y-2'>
             <div className='text-sm'>
-              <span className='text-slate-400'>Check In: </span>
-              <span className='text-slate-100 font-mono'>{todayRecord.checkIn || '—'}</span>
+              <span className='text-muted-foreground'>Check In: </span>
+              <span className='text-muted-foreground font-mono'>{todayRecord.checkIn || '—'}</span>
             </div>
             <div className='text-sm'>
-              <span className='text-slate-400'>Check Out: </span>
-              <span className='text-slate-100 font-mono'>{todayRecord.checkOut || '—'}</span>
+              <span className='text-muted-foreground'>Check Out: </span>
+              <span className='text-muted-foreground font-mono'>{todayRecord.checkOut || '—'}</span>
             </div>
             {todayRecord.checkIn && todayRecord.checkOut && (
               <div className='text-sm'>
-                <span className='text-slate-400'>Duration: </span>
+                <span className='text-muted-foreground'>Duration: </span>
                 <span className='text-emerald-300 font-mono font-semibold'>
                   {(() => {
                     const [inH, inM] = todayRecord.checkIn.split(':').map(Number);
@@ -212,7 +212,7 @@ export default function CheckInOut({ onCheckInSuccess, onCheckOutSuccess }: Chec
           </Button>
         </div>
 
-        <p className='text-xs text-slate-500 text-center pt-2'>
+        <p className='text-xs text-muted-foreground text-center pt-2'>
           Current time: {format(new Date(), 'HH:mm:ss')}
         </p>
       </div>

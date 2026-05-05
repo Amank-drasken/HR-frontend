@@ -96,9 +96,9 @@ export default function Sidebar() {
   });
 
   return (
-    <aside className='w-64 border-r border-slate-700/50 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 min-h-screen backdrop-blur-xl shadow-2xl'>
+    <aside className='w-64 border-r border-border bg-background min-h-screen backdrop-blur-xl shadow-2xl'>
       {/* Sidebar Header */}
-      <div className='p-6 border-b border-slate-700/30'>
+      <div className='p-6 border-b border-border'>
         {userRole === 'EMPLOYEE' ? (
           /* Employee View */
           <div className='space-y-4'>
@@ -107,12 +107,12 @@ export default function Sidebar() {
                 <span className='text-white font-bold text-sm'>{userName.charAt(0)}</span>
               </div>
               <div>
-                <p className='text-sm font-semibold text-slate-100'>{userName}</p>
-                <p className='text-xs text-slate-500 capitalize'>{userRole}</p>
+                <p className='text-sm font-semibold text-muted-foreground'>{userName}</p>
+                <p className='text-xs text-muted-foreground capitalize'>{userRole}</p>
               </div>
             </div>
-            <div className='bg-slate-800/50 rounded-lg p-3 border border-slate-700/30 space-y-2'>
-              <div className='text-xs text-slate-400'>Quick Status</div>
+            <div className='bg-card rounded-lg p-3 border border-border space-y-2'>
+              <div className='text-xs text-muted-foreground'>Quick Status</div>
               <Link href='/attendance' className='block'>
                 <div className='text-sm font-medium text-emerald-400 hover:text-emerald-300 transition-colors'>
                   📍 Check Attendance
@@ -138,7 +138,7 @@ export default function Sidebar() {
         )}
         
         {userRole !== 'EMPLOYEE' && (
-          <p className='text-xs text-slate-500'>Analytics & Management</p>
+          <p className='text-xs text-muted-foreground'>Analytics & Management</p>
         )}
       </div>
 
@@ -161,18 +161,18 @@ export default function Sidebar() {
                     'w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 group',
                     isActive
                       ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-blue-400 border border-blue-500/30 shadow-lg shadow-blue-500/10'
-                      : 'text-slate-300 hover:bg-slate-700/40 hover:text-slate-100 border border-transparent'
+                      : 'text-muted-foreground hover:bg-card hover:text-muted-foreground border border-transparent'
                   )}
                 >
                   <div className='flex items-center gap-3'>
-                    <Icon className={cn('w-5 h-5 transition-colors', isActive ? 'text-blue-400' : 'text-slate-400 group-hover:text-slate-300')} />
+                    <Icon className={cn('w-5 h-5 transition-colors', isActive ? 'text-blue-400' : 'text-muted-foreground group-hover:text-muted-foreground')} />
                     {item.label}
                   </div>
                   <ChevronDown
                     className={cn(
                       'w-4 h-4 transition-all duration-300',
                       openMenu === item.href ? 'rotate-180' : '',
-                      isActive ? 'text-blue-400' : 'text-slate-400'
+                      isActive ? 'text-blue-400' : 'text-muted-foreground'
                     )}
                   />
                 </button>
@@ -183,10 +183,10 @@ export default function Sidebar() {
                       'flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 group cursor-pointer',
                       isActive
                         ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-blue-400 border border-blue-500/30 shadow-lg shadow-blue-500/10'
-                        : 'text-slate-300 hover:bg-slate-700/40 hover:text-slate-100 border border-transparent'
+                        : 'text-muted-foreground hover:bg-card hover:text-muted-foreground border border-transparent'
                     )}
                   >
-                    <Icon className={cn('w-5 h-5 transition-colors', isActive ? 'text-blue-400' : 'text-slate-400 group-hover:text-slate-300')} />
+                    <Icon className={cn('w-5 h-5 transition-colors', isActive ? 'text-blue-400' : 'text-muted-foreground group-hover:text-muted-foreground')} />
                     {item.label}
                   </div>
                 </Link>
@@ -201,7 +201,7 @@ export default function Sidebar() {
                           'px-3 py-2 rounded-lg text-sm transition-all duration-300 group cursor-pointer',
                           pathname === subItem.href
                             ? 'bg-blue-500/20 text-blue-300 font-medium border border-blue-500/30'
-                            : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/30'
+                            : 'text-muted-foreground hover:text-muted-foreground hover:bg-card'
                         )}
                       >
                         {subItem.label}
@@ -216,11 +216,11 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className='absolute bottom-0 w-64 p-4 border-t border-slate-700/30 bg-gradient-to-t from-slate-900/50 to-transparent'>
-        <div className='p-4 rounded-lg bg-slate-800/50 border border-slate-700/30 backdrop-blur-xl'>
-          <p className='text-xs text-slate-500 mb-2'>Role</p>
-          <p className='text-sm font-semibold text-slate-200 capitalize'>{userRole || 'Loading...'}</p>
-          <p className='text-xs text-slate-500 mt-1'>HR System v1.0</p>
+      <div className='absolute bottom-0 w-64 p-4 border-t border-border bg-gradient-to-t from-background/50 to-transparent'>
+        <div className='p-4 rounded-lg bg-card border border-border backdrop-blur-xl'>
+          <p className='text-xs text-muted-foreground mb-2'>Role</p>
+          <p className='text-sm font-semibold text-muted-foreground capitalize'>{userRole || 'Loading...'}</p>
+          <p className='text-xs text-muted-foreground mt-1'>HR System v1.0</p>
         </div>
       </div>
     </aside>

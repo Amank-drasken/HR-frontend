@@ -11,7 +11,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { LogOut, Settings, Search } from 'lucide-react';
+import { LogOut, Settings, Search, User } from 'lucide-react';
+import Link from 'next/link';
 
 type AttendanceRecord = {
   id?: string;
@@ -28,7 +29,7 @@ const STATUS_STYLES: Record<string, string> = {
   'In Meeting': 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
   'Lunch Break': 'bg-red-500/20 text-red-300 border-red-500/30',
   'On Call': 'bg-purple-500/20 text-purple-300 border-purple-500/30',
-  'Out of Office': 'bg-slate-500/20 text-slate-300 border-slate-500/30',
+  'Out of Office': 'bg-card text-muted-foreground border-border',
 };
 
 const parseDateParts = (dateString?: string): { year: number; month: number; day: number } | null => {
@@ -247,21 +248,21 @@ export default function Navbar() {
   };
 
   return (
-    <header className='border-b border-slate-700/50 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 backdrop-blur-xl shadow-lg'>
+    <header className='sticky top-0 z-50 bg-glass shadow-atmospheric'>
       <div className='flex items-center justify-between px-8 py-4'>
         {/* Left Section */}
         <div className='flex items-center gap-6 flex-1'>
           <h1 className='text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent whitespace-nowrap'>
-            HR Management System
+            Drasken HRMS
           </h1>
           
           {/* Search Bar */}
           <div className='hidden md:flex flex-1 max-w-xs relative'>
-            <Search className='absolute left-3 top-2.5 h-4 w-4 text-slate-400' />
+            <Search className='absolute left-3 top-2.5 h-4 w-4 text-muted-foreground' />
             <input
               type='text'
               placeholder='Search employees...'
-              className='w-full pl-10 pr-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors text-sm'
+              className='w-full pl-10 pr-4 py-2 rounded-lg bg-card border border-border text-muted-foreground placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors text-sm'
             />
           </div>
         </div>
@@ -269,15 +270,15 @@ export default function Navbar() {
         {/* Right Section */}
         <div className='flex items-center gap-4'>
           {/* Login Time + Status */}
-          <div className='hidden lg:flex items-center gap-4 rounded-lg border border-slate-700/50 bg-slate-800/40 px-4 py-2'>
+          <div className='hidden lg:flex items-center gap-4 rounded-lg border border-border bg-card px-4 py-2'>
             <div className='flex flex-col leading-tight'>
-              <span className='text-[10px] uppercase tracking-wide text-slate-500'>Session</span>
-              <span className='text-sm font-semibold text-slate-100'>{sessionDuration}</span>
+              <span className='text-[10px] uppercase tracking-wide text-muted-foreground'>Session</span>
+              <span className='text-sm font-semibold text-muted-foreground'>{sessionDuration}</span>
             </div>
-            <div className='h-8 w-px bg-slate-700/60'></div>
+            <div className='h-8 w-px bg-card'></div>
             <div className='flex flex-col leading-tight'>
-              <span className='text-[10px] uppercase tracking-wide text-slate-500'>Today</span>
-              <span className='text-sm font-semibold text-slate-100'>{todayDuration}</span>
+              <span className='text-[10px] uppercase tracking-wide text-muted-foreground'>Today</span>
+              <span className='text-sm font-semibold text-muted-foreground'>{todayDuration}</span>
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger
@@ -290,13 +291,13 @@ export default function Navbar() {
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align='end'
-                className='w-48 bg-slate-800/95 border border-slate-700/50 backdrop-blur-xl rounded-lg shadow-2xl'
+                className='w-48 bg-card border border-border backdrop-blur-xl rounded-lg shadow-2xl'
               >
                 {STATUS_OPTIONS.map((status) => (
                   <DropdownMenuItem
                     key={status}
                     onClick={() => handleStatusChange(status)}
-                    className='text-slate-200 hover:bg-slate-700/50 hover:text-slate-100 cursor-pointer'
+                    className='text-muted-foreground hover:bg-card hover:text-muted-foreground cursor-pointer'
                   >
                     {status}
                   </DropdownMenuItem>
@@ -305,7 +306,7 @@ export default function Navbar() {
             </DropdownMenu>
             {userStatus === 'Lunch Break' && (
               <div className='ml-2 flex flex-col leading-tight'>
-                <span className='text-[10px] uppercase tracking-wide text-slate-500'>Lunch</span>
+                <span className='text-[10px] uppercase tracking-wide text-muted-foreground'>Lunch</span>
                 <span className='text-xs font-semibold text-amber-300'>{lunchDuration}</span>
               </div>
             )}
@@ -318,29 +319,38 @@ export default function Navbar() {
             </DropdownMenuTrigger>
             <DropdownMenuContent 
               align='end' 
-              className='w-60 bg-slate-800/95 border border-slate-700/50 backdrop-blur-xl rounded-lg shadow-2xl'
+              className='w-60 bg-card border border-border backdrop-blur-xl rounded-lg shadow-2xl'
             >
-              <div className='px-4 py-3 border-b border-slate-700/30'>
-                <p className='text-sm font-semibold text-slate-100'>{userName}</p>
-                <p className='text-xs text-slate-400'>{userEmail}</p>
+              <div className='px-4 py-3 border-b border-border'>
+                <p className='text-sm font-semibold text-muted-foreground'>{userName}</p>
+                <p className='text-xs text-muted-foreground'>{userEmail}</p>
               </div>
 
               <DropdownMenuItem
                 onClick={handleAlerts}
-                className='text-slate-200 hover:bg-slate-700/50 hover:text-slate-100 cursor-pointer'
+                className='text-muted-foreground hover:bg-card hover:text-muted-foreground cursor-pointer'
               >
                 <span>Alerts</span>
               </DropdownMenuItem>
               
               <DropdownMenuItem 
+                className='text-muted-foreground hover:bg-primary/10 hover:text-primary cursor-pointer p-0'
+              >
+                <Link href='/my-profile' className='flex items-center w-full px-2 py-1.5'>
+                  <User className='h-4 w-4 mr-2' />
+                  <span>My Profile</span>
+                </Link>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem 
                 onClick={handleSettings}
-                className='text-slate-200 hover:bg-slate-700/50 hover:text-slate-100 cursor-pointer'
+                className='text-muted-foreground hover:bg-card hover:text-muted-foreground cursor-pointer'
               >
                 <Settings className='h-4 w-4 mr-2' />
                 <span>Settings & Preferences</span>
               </DropdownMenuItem>
 
-              <div className='border-t border-slate-700/30 my-1'></div>
+              <div className='border-t border-border my-1'></div>
 
               <DropdownMenuItem 
                 onClick={handleLogout} 
@@ -355,15 +365,15 @@ export default function Navbar() {
       </div>
 
       {/* Status Bar */}
-      <div className='hidden sm:block border-t border-slate-700/30 bg-slate-900/30 px-8 py-2'>
-        <div className='flex items-center justify-between text-xs text-slate-400'>
+      <div className='hidden sm:block border-t border-border bg-muted/30 px-8 py-2'>
+        <div className='flex items-center justify-between text-xs text-muted-foreground'>
           <div className='flex items-center gap-4'>
             <div className='flex items-center gap-2'>
               <span className='w-2 h-2 bg-green-500 rounded-full animate-pulse'></span>
               <span>System Status: Operational</span>
             </div>
           </div>
-          <div className='text-slate-500'>
+          <div className='text-muted-foreground'>
             Last sync: Just now
           </div>
         </div>

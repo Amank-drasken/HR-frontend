@@ -1,9 +1,20 @@
 import type { Metadata } from "next";
+import { Inter, Manrope } from "next/font/google";
 import "./globals.css";
 
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-manrope",
+});
+
 export const metadata: Metadata = {
-  title: "HR Management System",
-  description: "Complete HR Management System",
+  title: "Drasken HRMS",
+  description: "The Architectural Ledger - Premium HRMS",
 };
 
 export default function RootLayout({
@@ -13,7 +24,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className={`${inter.variable} ${manrope.variable} antialiased`}>
+        {children}
+      </body>
     </html>
   );
 }
