@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# deployment files (local only - not for git)
+DEPLOYMENT_GUIDE.md
+FRONTEND_DEPLOYMENT_CHECKLIST.md
+QUICK_START.md
+ecosystem.config.js
+nginx.conf
+setup.sh
