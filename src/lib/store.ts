@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { persist, PersistStorage } from 'zustand/middleware';
 
 interface AuthStore {
   token: string | null;
@@ -10,40 +9,30 @@ interface AuthStore {
   initializeAuth: () => void;
 }
 
-type AuthStoreWithPersist = AuthStore;
-
-export const useAuthStore = create<AuthStoreWithPersist>()(
-  persist(
-    (set) => ({
-      token: null,
-      isAuthenticated: false,
-      setToken: (token) => {
-        // Sync to localStorage for API interceptor
-        if (token) {
-          localStorage.setItem('access_token', token);
-        } else {
-          localStorage.removeItem('access_token');
-        }
-        set({ token, isAuthenticated: !!token });
-      },
-      setAuthenticated: (authenticated) => set({ isAuthenticated: authenticated }),
-      logout: () => {
-        localStorage.removeItem('access_token');
-        set({ token: null, isAuthenticated: false });
-      },
-      initializeAuth: () => {
-        if (typeof window !== 'undefined') {
-          const token = localStorage.getItem('access_token');
-          set({ token, isAuthenticated: !!token });
-        }
-      },
-    }),
-    {
-      name: 'auth-store',
-      partialize: (state) => ({ token: state.token, isAuthenticated: state.isAuthenticated }),
+export const useAuthStore = create<AuthStore>((set) => ({
+  token: null,
+  isAuthenticated: false,
+  setToken: (token) => {
+    // Sync to localStorage for API interceptor
+    if (token) {
+      localStorage.setItem('access_token', token);
+    } else {
+      localStorage.removeItem('access_token');
     }
-  )
-);
+    set({ token, isAuthenticated: !!token });
+  },
+  setAuthenticated: (authenticated) => set({ isAuthenticated: authenticated }),
+  logout: () => {
+    localStorage.removeItem('access_token');
+    set({ token: null, isAuthenticated: false });
+  },
+  initializeAuth: () => {
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('access_token');
+      set({ token, isAuthenticated: !!token });
+    }
+  },
+}));
 
 interface Employee {
   id: string;
