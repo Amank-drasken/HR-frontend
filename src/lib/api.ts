@@ -64,8 +64,10 @@ api.interceptors.response.use(
       isMockAuthMode ||
       (typeof window !== 'undefined' && localStorage.getItem('access_token') === 'mock-access-token');
 
-    // If 401 error and mock auth is enabled, return mock data (BEFORE LOGGING)
-    if (status === 401 && isMockAuthActive) {
+    // If 401 error OR network error and mock auth is enabled, return mock data (BEFORE LOGGING)
+    const isNetworkError = !error.response;
+    if ((status === 401 || (isNetworkError && isMockAuthActive)) && isMockAuthActive) {
+      console.log(`✅ MOCK MODE ACTIVATED for ${url}`);
       // Return appropriate mock data based on the URL
       if (url?.includes('/employees')) {
         return Promise.resolve({
