@@ -64,10 +64,10 @@ api.interceptors.response.use(
       isMockAuthMode ||
       (typeof window !== 'undefined' && localStorage.getItem('access_token') === 'mock-access-token');
 
-    // If 401 error OR network error and mock auth is enabled, return mock data (BEFORE LOGGING)
+    // If mock auth is enabled and (401/404 error OR network error), return mock data (BEFORE LOGGING)
     const isNetworkError = !error.response;
-    if ((status === 401 || (isNetworkError && isMockAuthActive)) && isMockAuthActive) {
-      console.log(`✅ MOCK MODE ACTIVATED for ${url}`);
+    if (isMockAuthActive && (status === 401 || status === 404 || isNetworkError)) {
+      console.log(`✅ MOCK MODE ACTIVATED for ${url} (status: ${status || 'network error'})`);
       // Return appropriate mock data based on the URL
       if (url?.includes('/employees')) {
         return Promise.resolve({
@@ -105,16 +105,18 @@ api.interceptors.response.use(
       } as any);
     }
 
-    // Better error logging (ONLY for non-mock 401s)
+    // Better error logging (skip 401/404 errors in mock mode)
     if (!error.response) {
       // Network error, no response from server
-      console.error(`❌ Network Error (${errorMessage}): ${url}`, {
-        message: errorMessage,
-        code: error.code,
-        config: error.config,
-      });
-    } else if (status !== 401 || !isMockAuthActive) {
-      // Server responded with error status (skip 401 errors in mock mode)
+      if (!isMockAuthActive) {
+        console.error(`❌ Network Error (${errorMessage}): ${url}`, {
+          message: errorMessage,
+          code: error.code,
+          config: error.config,
+        });
+      }
+    } else if (!isMockAuthActive || (status !== 401 && status !== 404)) {
+      // Server responded with error status (skip 401/404 errors in mock mode)
       console.error(`❌ API Error: ${status} ${url}`, responseData);
     }
 
