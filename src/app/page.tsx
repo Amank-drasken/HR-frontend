@@ -4,7 +4,7 @@ export default function Home() {
   return (
     <div className='flex items-center justify-center min-h-screen bg-gray-50'>
       <div className='text-center'>
-        <h1 className='text-2xl font-bold text-gray-900 mb-4'>DRASKENnnnn HRMS</h1>
+        <h1 className='text-2xl font-bold text-gray-900 mb-4'>DRASKEN HRMS</h1>
         <p className='text-gray-600'>Redirecting...</p>
         <script>
           {`

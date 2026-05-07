@@ -1,0 +1,145 @@
+================================================================================
+                    FRONTEND DEPLOYMENT - READY TO PASTE
+================================================================================
+
+VPS HOST: 141.94.79.108
+USERNAME: ubuntu  
+PASSWORD: 6bnb7pcnNq2H
+
+================================================================================
+STEP 1: SSH CONNECTION
+================================================================================
+
+Open Terminal/Command Prompt/PowerShell and run:
+
+    ssh ubuntu@141.94.79.108
+
+When prompted for password, paste: 6bnb7pcnNq2H
+
+================================================================================
+STEP 2: DEPLOYMENT (Paste all commands below at once in SSH)
+================================================================================
+
+cd /home/ubuntu && rm -rf frontend && git clone https://github.com/Amank-drasken/HR-frontend.git frontend && cd frontend && npm install && npm run build && pm2 delete frontend 2>/dev/null || true && pm2 start "npm start" --name "frontend" --cwd /home/ubuntu/frontend && pm2 save && pm2 startup 2>/dev/null || true && echo "" && echo "✅ DEPLOYMENT COMPLETE!" && pm2 status && pm2 logs frontend --lines 100
+
+================================================================================
+STEP 3: VERIFY (After deployment completes)
+================================================================================
+
+Check status:
+    pm2 status
+
+View logs:
+    pm2 logs frontend
+
+Open in browser:
+    http://141.94.79.108:3001
+
+================================================================================
+QUICK REFERENCE COMMANDS (Use after deployment)
+================================================================================
+
+# Check if frontend is running
+pm2 status
+
+# View logs (real-time)
+pm2 logs frontend
+
+# Restart frontend
+pm2 restart frontend
+
+# Stop frontend
+pm2 stop frontend
+
+# View specific log lines
+pm2 logs frontend --lines 50
+
+# Monitor resources
+pm2 monit
+
+# Check port
+netstat -tulpn | grep 3001
+
+================================================================================
+EXPECTED OUTPUT
+================================================================================
+
+After running deployment command, you should see:
+
+✅ DEPLOYMENT COMPLETE!
+┌─────────┬──────┬──────┬────────┬────────┬──────────┐
+│ id      │ name │ mode │ status │ ↺      │ uptime   │
+├─────────┼──────┼──────┼────────┼────────┼──────────┤
+│ 0       │ frontend │ fork │ online │ 0      │ 0s       │
+└─────────┴──────┴──────┴────────┴────────┴──────────┘
+
+Then logs will show...
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+Issue: npm: command not found
+Solution: Node.js not installed - run: curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - && sudo apt install -y nodejs
+
+Issue: git: command not found  
+Solution: Git not installed - run: sudo apt install -y git
+
+Issue: pm2: command not found
+Solution: PM2 not installed - run: sudo npm install -g pm2
+
+Issue: Port 3001 already in use
+Solution: Kill process - run: sudo lsof -i :3001 && sudo kill -9 <PID>
+
+Issue: Build fails
+Solution: Check logs - run: npm run build (debug locally first)
+
+================================================================================
+DEPLOYMENT TIME
+================================================================================
+
+npm install: ~3-5 minutes
+npm build: ~2-3 minutes  
+PM2 setup: ~1 minute
+TOTAL: ~10-15 minutes
+
+================================================================================
+FINAL VERIFICATION
+================================================================================
+
+After deployment:
+
+1. SSH into VPS:
+   ssh ubuntu@141.94.79.108
+
+2. Check status:
+   pm2 status
+
+3. View logs:
+   pm2 logs frontend --lines 20
+
+4. Browser test:
+   http://141.94.79.108:3001
+
+5. Confirm:
+   - Frontend loads ✓
+   - No errors in logs ✓
+   - Can interact with UI ✓
+
+SUCCESS! Frontend is live! 🎉
+
+================================================================================
+NOTES FOR FUTURE UPDATES
+================================================================================
+
+To update frontend code later:
+
+cd /home/ubuntu/frontend
+git pull origin main
+npm install
+npm run build
+pm2 restart frontend
+
+That's it! 🚀
+
+================================================================================
