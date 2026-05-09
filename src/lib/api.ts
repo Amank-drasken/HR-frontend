@@ -146,28 +146,54 @@ export const authAPI = {
 export const employeeAPI = {
   getAll: () => api.get('/employees'),
   getById: (id: string) => api.get(`/employees/${id}`),
-  create: (data: any) => api.post('/employees', data),
-  update: (id: string, data: any) => api.patch(`/employees/${id}`, data),
+  // NOTE: Backend does NOT have POST /employees - use authAPI.createEmployee instead
+  create: (data: any) => api.post('/auth/register', data), // Use auth/register endpoint
+  update: (id: string, data: any) => api.put(`/employees/${id}`, data), // Changed from PATCH to PUT (backend uses PUT)
   delete: (id: string) => api.delete(`/employees/${id}`),
+  // Education endpoints
+  addEducation: (id: string, data: any) => api.post(`/employees/${id}/education`, data),
+  getEducation: (id: string) => api.get(`/employees/${id}/education`),
+  deleteEducation: (eduId: string) => api.delete(`/employees/education/${eduId}`),
+  // Experience endpoints
+  addExperience: (id: string, data: any) => api.post(`/employees/${id}/experience`, data),
+  getExperience: (id: string) => api.get(`/employees/${id}/experience`),
+  deleteExperience: (expId: string) => api.delete(`/employees/experience/${expId}`),
 };
 
-// Department APIs
+// Department APIs - NOTE: Backend does NOT have /departments endpoint
 export const departmentAPI = {
-  getAll: () => api.get('/departments'),
+  // WORKAROUND: Return mock data since backend doesn't have this endpoint
+  getAll: () => Promise.resolve({ data: demoDepartments }),
 };
 
-// Location APIs
+// Location APIs - Fixed path from /locations to /employees/locations/all
 export const locationAPI = {
-  getAll: () => api.get('/locations'),
+  getAll: () => api.get('/employees/locations/all'), // Changed from /locations to /employees/locations/all
 };
 
 // Attendance APIs
 export const attendanceAPI = {
   getAll: () => api.get('/attendance'),
-  getById: (id: string) => api.get(`/attendance/${id}`),
-  create: (data: any) => api.post('/attendance', data),
-  update: (id: string, data: any) => api.patch(`/attendance/${id}`, data),
-  delete: (id: string) => api.delete(`/attendance/${id}`),
+  // NOTE: Backend does NOT have GET /attendance/:id endpoint
+  getById: (id: string) => {
+    console.warn('⚠️ Backend does not have GET /attendance/:id endpoint');
+    return Promise.reject(new Error('Endpoint not available'));
+  },
+  // NOTE: Backend does NOT have POST /attendance endpoint
+  create: (data: any) => {
+    console.warn('⚠️ Backend does not have POST /attendance endpoint');
+    return Promise.reject(new Error('Endpoint not available'));
+  },
+  // NOTE: Backend does NOT have PATCH /attendance/:id endpoint
+  update: (id: string, data: any) => {
+    console.warn('⚠️ Backend does not have PATCH /attendance/:id endpoint');
+    return Promise.reject(new Error('Endpoint not available'));
+  },
+  // NOTE: Backend does NOT have DELETE /attendance/:id endpoint
+  delete: (id: string) => {
+    console.warn('⚠️ Backend does not have DELETE /attendance/:id endpoint');
+    return Promise.reject(new Error('Endpoint not available'));
+  },
   checkIn: (employeeId: string) => api.post(`/attendance/checkin/${employeeId}`),
   checkOut: (attendanceId: string) => api.post(`/attendance/checkout/${attendanceId}`),
   getEmployeeAttendance: (employeeId: string) => api.get(`/attendance/employee/${employeeId}`),
